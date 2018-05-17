@@ -12,7 +12,7 @@ helm install ./ --wait
 
 # Production install
 
-Copy `values.yaml` to `values/[something].yaml` and modify it to suite your needs.
+Copy `values.yaml` to `values/[something].yaml` and modify it to suit your needs.
 
 Then run with a namespace and human readable name:
 
