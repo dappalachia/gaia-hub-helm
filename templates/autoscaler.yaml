@@ -1,0 +1,33 @@
+{{- if .Values.autoscaler.enabled -}}
+{{- $fullName := include "gaia-hub.fullname" . -}}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $fullName }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: {{ template "gaia-hub.name" . }}
+  minReplicas: {{ .Values.replicaCount }}
+  maxReplicas: {{ .Values.autoscaler.maxReplicaCount }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+  - type: Pods
+    pods:
+      metricName: packets-per-second
+      targetAverageValue: 1k
+  {{- if .Values.ingress.enabled }}
+  - type: Object
+    object:
+      metricName: requests-per-second
+      target:
+        apiVersion: extensions/v1beta1
+        kind: Ingress
+        name: {{ $fullName }}
+      targetValue: 3k
+  {{- end }}
+{{- end }}

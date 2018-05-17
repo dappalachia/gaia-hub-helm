@@ -1,0 +1,59 @@
+{{- $fullName := include "gaia-hub.fullname" . -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "gaia-hub.name" . }}
+    chart: {{ template "gaia-hub.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "gaia-hub.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "gaia-hub.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.hub.repository }}:{{ .Values.hub.tag }}"
+          imagePullPolicy: {{ .Values.hub.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.env }}
+            {{- if $value }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          ports:
+            - name: gaia-hub
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /hub_info/
+              port: gaia-hub
+          readinessProbe:
+            httpGet:
+              path: /hub_info/
+              port: gaia-hub
+          resources:
+            {{- if .Values.env.gaia_diskSettings_storageRootDirectory }}
+            volumeMounts:
+            - name: gaia-hub-data
+              mountPath: {{ .Values.env.gaia_diskSettings_storageRootDirectory }}
+            {{- end }}
+    volumes:
+      - name: gaia-hub-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "gaia-hub.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}

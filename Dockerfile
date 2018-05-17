@@ -1,0 +1,3 @@
+FROM dappalachia/helm
+
+COPY . .

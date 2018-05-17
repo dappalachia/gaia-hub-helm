@@ -1,0 +1,10 @@
+name: gaia-hub
+home: https://github.com/blockstack/gaia
+description: A decentralized high-performance storage system
+appVersion: 1.0
+version: 0.1.0
+sources:
+  - https://github.com/blockstack/gaia
+maintainers:
+  - name: robert-bo-davis
+    email: bo@interrobang.consulting
