@@ -43,17 +43,16 @@ spec:
             httpGet:
               path: /hub_info/
               port: gaia-hub
-          resources:
-            {{- if .Values.env.gaia_diskSettings_storageRootDirectory }}
-            volumeMounts:
-            - name: gaia-hub-data
-              mountPath: {{ .Values.env.gaia_diskSettings_storageRootDirectory }}
-            {{- end }}
-    volumes:
-      - name: gaia-hub-data
-      {{- if .Values.persistence.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.persistence.existingClaim | default (include "gaia-hub.fullname" .) }}
-      {{- else }}
-        emptyDir: {}
-      {{- end -}}
+          {{- if .Values.env.gaia_diskSettings_storageRootDirectory }}
+          volumeMounts:
+          - name: gaia-hub-data
+            mountPath: {{ .Values.env.gaia_diskSettings_storageRootDirectory }}
+          {{- end }}
+      volumes:
+        - name: gaia-hub-data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "gaia-hub.fullname" .) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end -}}

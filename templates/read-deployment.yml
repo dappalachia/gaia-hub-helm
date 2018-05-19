@@ -1,0 +1,51 @@
+{{- if eq .Values.env.gaia_driver "disk" -}}
+{{- $fullName := include "gaia-hub.fullname" . -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-read
+  labels:
+    app: {{ template "gaia-hub.name" . }}-read
+    chart: {{ template "gaia-hub.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "gaia-hub.name" . }}-read
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "gaia-hub.name" . }}-read
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-read
+          image: nginx:alpine
+          imagePullPolicy: {{ .Values.hub.pullPolicy }}
+          ports:
+            - name: gaia-read
+              containerPort: 80
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /hub_info/
+          #     port: gaia-hub
+          # readinessProbe:
+          #   httpGet:
+          #     path: /hub_info/
+          #     port: gaia-hub
+          volumeMounts:
+          - name: gaia-hub-data-read
+            mountPath: /usr/share/nginx/html/read/
+      volumes:
+        - name: gaia-hub-data-read
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "gaia-hub.fullname" .) }}-read
+        {{- else }}
+          emptyDir: {}
+        {{- end -}}
+{{- end -}}

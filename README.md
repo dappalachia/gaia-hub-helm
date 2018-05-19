@@ -19,9 +19,9 @@ Then run with a namespace and human readable name:
 Examples:
 
 ```
-helm install --namespace disk-gaia-hub --name disk -f values/disk.yaml ./ --wait
+helm install --namespace disk-gaia-hub --name gaia-disk -f values/disk.yaml ./ --wait
 ```
 
 ```
-helm install --namespace aws-gaia-hub --name aws -f values/aws.yaml ./ --wait
+helm install --namespace aws-gaia-hub --name gaia-aws -f values/aws.yaml ./ --wait
 ```

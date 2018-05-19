@@ -40,6 +40,9 @@ persistence:
   ## If defined, PVC must be created manually before volume will be bound
   # existingClaim:
 
+  ## Used to mount local dir into hub and read containers for local testing
+  # hostPath:
+
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is
@@ -47,25 +50,12 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: "-"
-  accessMode: ReadWriteOnce
-  size: 1Gi
-
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  accessMode: ReadWriteMany
+  size: 100Gi
 
 service:
-  port: 3000
-
+  hubPort: 3000
+  diskPort: 80
   ## If service.type is not set to NodePort, the following statement
   ## will be ignored.
   ##
@@ -88,8 +78,13 @@ ingress:
 
   ## gaia-hub hostnames must be provided if Ingress is enabled
   ##
-  # hosts:
+  # hubHosts:
   #   - gaia-hub.domain.io
+
+  ## gaia-disk hostnames must be provided if Ingress is enabled and disk type
+  ##
+  # diskHosts:
+  #   - gaia-disk.domain.io
 
   ## gaia-hub Ingress TLS configuration secrets
   ## Must be manually created in the namespace

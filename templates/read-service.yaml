@@ -1,0 +1,24 @@
+{{- if eq .Values.env.gaia_driver "disk" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "gaia-hub.fullname" . }}-read
+  labels:
+    app: {{ template "gaia-hub.name" . }}-read
+    chart: {{ template "gaia-hub.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.readPort }}
+      targetPort: 80
+{{- if hasKey .Values.service "nodePort" }}
+    nodePort: {{ .Values.service.nodePort }}
+{{- end }}
+      protocol: TCP
+      name: gaia-read
+  selector:
+    app: {{ template "gaia-hub.name" . }}-read
+    release: {{ .Release.Name }}
+{{- end -}}

@@ -10,7 +10,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.hubPort }}
       targetPort: 3000
 {{- if hasKey .Values.service "nodePort" }}
     nodePort: {{ .Values.service.nodePort }}

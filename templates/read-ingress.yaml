@@ -1,0 +1,40 @@
+{{- if .Values.ingress.enabled -}}
+{{- if eq .Values.env.gaia_driver "disk" -}}
+{{- $fullName := include "gaia-hub.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-read
+  labels:
+    app: {{ template "gaia-hub.name" . }}-read
+    chart: {{ template "gaia-hub.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- with .Values.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hubHosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /read/
+            backend:
+              serviceName: {{ $fullName }}-read
+              servicePort: gaia-read
+  {{- end }}
+{{- end }}
+{{- end }}

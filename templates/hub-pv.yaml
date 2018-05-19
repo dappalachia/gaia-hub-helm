@@ -1,0 +1,26 @@
+{{- if eq .Values.env.gaia_driver "disk" -}}
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ template "gaia-hub.fullname" . }}
+  {{- if .Values.persistence.hostPath }}
+  labels:
+    type: local
+  {{- end }}
+spec:
+  {{- if (eq "-" .Values.persistence.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.persistence.storageClass }}"
+  {{- end }}
+  capacity:
+    storage: {{ .Values.persistence.size | quote }}
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+{{- if .Values.persistence.hostPath }}
+  hostPath:
+    path: "{{ .Values.persistence.hostPath }}"
+{{- end }}
+{{- end }}
+{{- end }}
