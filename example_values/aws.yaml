@@ -1,0 +1,121 @@
+# Default values for gaia-hub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+hub:
+  repository: dappalachia/gaia-hub
+  tag: latest
+  pullPolicy: Always
+
+env:
+  gaia_servername: aws-gaia-hub.awholefarm.com
+  gaia_port: 3000
+  gaia_driver: aws
+  gaia_bucket: gaia-hub-interrobangc
+  gaia_readURL:
+  gaia_whitelist:
+  gaia_diskSettings_storageRootDirectory:
+  gaia_awsCredentials_accessKeyId: AAAAAAAAAAAAAAAAAAAA
+  gaia_awsCredentials_secretAccessKey: "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+  gaia_proofsConfig_proofsRequired:
+  gaia_azCredentials_accountName:
+  gaia_azCredentials_accountKey:
+  gaia_gcCredentials_projectId:
+  gaia_argsTransport_colorize:
+  gaia_argsTransport_handleExceptions:
+  gaia_argsTransport_json:
+  gaia_argsTransport_level:
+  gaia_argsTransport_stringify:
+  gaia_argsTransport_timestamp:
+
+# Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  enabled: false
+
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+service:
+  hubPort: 3000
+  diskPort: 80
+
+  ## If service.type is not set to NodePort, the following statement
+  ## will be ignored.
+  ##
+  # nodePort: 32015
+
+  ## Service type can be set to ClusterIP, NodePort or LoadBalancer.
+  ##
+  type: NodePort
+
+ingress:
+  ## If true, Drone Ingress will be created.
+  ##
+  enabled: true
+
+  ## Drone Ingress annotations
+  ##
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: 'true'
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+  hubHosts:
+    - aws-gaia-hub.awholefarm.com
+
+  ## Drone hostnames must be provided if Ingress is enabled
+  ##
+  # hosts:
+  #   - gaia-hub.domain.io
+
+  ## Drone Ingress TLS configuration secrets
+  ## Must be manually created in the namespace
+  ##
+  # tls:
+  #   - secretName: gaia-hub-tls
+  #     hosts:
+  #       - gaia-hub.domain.io
+
+autoscaler:
+  enabled: true
+
+  # replicaCount is used for minReplicas.
+  # you should set a max
+  maxReplicaCount: 2
+
